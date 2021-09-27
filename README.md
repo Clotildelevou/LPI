@@ -49,6 +49,7 @@ Linux programming interface book exercises
 -rw------- 1 cloture cloture 20000000 sept. 27 21:26 f1
 -rw------- 1 cloture cloture 10148463 sept. 27 21:27 f2
 ```
+
 Because  the  combination  of  lseek()  plus  write()  is  not  atomic,  one  instance  of  the
 program sometimes overwrote bytes written by the other instance. As a result, the file
 f2 contains less than 2 million bytes.
