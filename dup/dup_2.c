@@ -4,13 +4,13 @@ int main(int argc, char *argv[])
 {
     int newfd;
 
+    if (argc != 3) {
+        printf("usage: ./a.out oldfd newfd\n");
+    }
     if (strcmp(argv[1], argv[2]) == 0)
     {
         return atoi(argv[1]);
     }
-
-    if (argc != 3)
-        printf("usage: ./a.out oldfd newfd\n");
 
     if (fcntl(atoi(argv[1]),  F_GETFD) == -1)
     {
