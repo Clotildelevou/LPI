@@ -1,4 +1,4 @@
-# tLPI
+# LPI
 
 Linux programming interface book exercises
 - **tee** : tee command with -a option and --help
