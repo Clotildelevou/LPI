@@ -61,4 +61,5 @@ f2 contains less than 2 million bytes.
   checking if fcntl(oldfd, F_GETFL) succeeds. If oldfd is not valid, then the function
   should return –1 with errno set to EBADF .
 
-
+- **check dup** : Write a program to verify that duplicated file descriptors share a file offset value
+  and open file status flags.
