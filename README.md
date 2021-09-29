@@ -53,3 +53,12 @@ Linux programming interface book exercises
 Because  the  combination  of  lseek()  plus  write()  is  not  atomic,  one  instance  of  the
 program sometimes overwrote bytes written by the other instance. As a result, the file
 f2 contains less than 2 million bytes.
+
+- **dup** : Implement dup() and dup2() using fcntl() and, where necessary, close(). (You may
+  ignore the fact that dup2() and fcntl() return different errno values for some error
+  cases.) For dup2(), remember to handle the special case where oldfd equals newfd. In
+  this case, you should check whether oldfd is valid, which can be done by, for example,
+  checking if fcntl(oldfd, F_GETFL) succeeds. If oldfd is not valid, then the function
+  should return –1 with errno set to EBADF .
+
+
