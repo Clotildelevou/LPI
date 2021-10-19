@@ -2,10 +2,13 @@
 
 char *build_path(char *dirname)
 {
+    char *proc = "/proc/";
     char *status = "/status";
-    char *path = malloc(sizeof(dirname) + sizeof(status));
-    strcpy(path, dirname);
+    char *path = malloc(sizeof(dirname) + sizeof(proc) + sizeof(status));
+    strcpy(path, proc);
+    strcat(path, dirname);
     strcat(path, status);
+    printf("%s\n", path);
     return path;
 }
 
@@ -44,11 +47,37 @@ char *get_name(FILE *file)
         end++;
     }
     size_t size = start - end;
-    char *name = malloc(size);
+    char *name = malloc(size + 1);
     strncpy(start, name, size);
     line_size = line_size;
     line_count = line_count;
+    strcpy(&name[size + 1], "\0");
     return name;
+}
+
+long get_uid(FILE *file)
+{
+    char *line_buf = NULL;
+    size_t line_buf_size = 0;
+    int line_count = 0;
+    ssize_t line_size;
+
+    line_size = getline(&line_buf, &line_buf_size, file);
+    char *start = strstr(line_buf, "Uid:");
+    start += 3;
+
+    char *end = start;
+    while(strcmp(end, "\n") != 0)
+    {
+        end++;
+    }
+    size_t size = start - end;
+    char *uid = malloc(size + 1);
+    strncpy(start, uid, size);
+    line_size = line_size;
+    line_count = line_count;
+    strcpy(&uid[size + 1], "\0");
+    return strtol(uid, NULL, 10);
 }
 
 int main(int argc, char *argv[])
@@ -65,28 +94,39 @@ int main(int argc, char *argv[])
     folder = opendir("/proc");
     if (folder == NULL)
     {
-        perror("Unable to read directory");
+        perror("Unable to open directory");
         exit(-1);
     }
 
-    while((entry = readdir(folder)))
+    while(1)
     {
-        if (entry->d_type == DT_DIR)
-        {
-            char *path = build_path(entry->d_name);
-            FILE *file = fopen(path, "r");
-            if (file == NULL)
-            {
-                perror("Couldn't open file");
-                exit(-1);
-            }
-            char *name = get_name(file);
-            printf("File : %s\n", name);
-
-            free(name);
-            free(path);
-            fclose(file);
+        entry = readdir(folder);
+        errno = 0;
+        if (entry == NULL) {
+            if (errno != 0)
+                perror("Unable to read directory");
+            else
+                break;
         }
+
+        if (entry->d_type != DT_DIR || !isdigit((unsigned char) entry->d_name[0]))
+            continue;
+
+        char *path = build_path(entry->d_name);
+        FILE *file = fopen(path, "r");
+        if (file == NULL)
+        {
+            perror(path);
+            continue;
+        }
+
+        char *name = get_name(file);
+        long uid = get_uid(file);
+        printf("File : %s, uid : %ld\n", name, uid);
+        free(name);
+        free(path);
+        fclose(file);
+        printf("PID : %s\n", entry->d_name);
     }
 
     argv = argv;
